@@ -1,0 +1,75 @@
+---
+title: "Options Project"
+output: html_document
+---
+
+Hedging is an investment strategy that reduces the risk of adverse price movements for a given asset. Often it refers to offsetting a position with a call or put option. In this presentation, I will show how buying S&P 500 put options can reduce the risk in an investor's position. 
+
+Assume that an investor owns $1,000,000 worth of the S&P 500 mutual fund and is concerned it may dip. He is willing to spend 2.968% of his position value (or $29680) to hedge your portfolio for one month. The S&P 500 index (SPX) is worth $2,111.72. The cost of one SPX put option that expires in three months with a strike price equal to the current price is $42.40. (Data is from Nov 1st, 2016 at 4:30 PM and was found on marketwatch.com) Then, the $29680 can purchase a total of 7 contracts because $42.40 (ask price) * 7 (number of contracts) * 100 (option multiplier) = $29680. 
+
+The following table and plot shows how the increase or decrease in S&P 500 after one month affects the investor's portfolio after he bought the 7 put options. 
+
+
+```{r}
+#Setting values for P=money willing to be invested, Perc = percentage willing to be used for buying put options, SPX = S&P500 price, numPuts = number of put options bought
+
+P=1000000   #money invested
+Perc=0.03   #percentage for put options
+SPX = 1407   # S&P 500 price
+numPuts=6    #numPuts = number of put options 
+
+#creating a sequence of numbers that represent percentage growth or decrease of SPX
+SPXperc = c(seq(-0.5,0.5,0.05))
+
+#Calculating how much your position is worth given that SPX grows or decreases by SPXperc
+SPXvalue = SPX * (SPXperc+1)
+Putvalue = (pmax(SPX-SPXvalue, 0))*numPuts*100
+Positionvalue = (P*(1-Perc))*(1+SPXperc)
+Position_value_with_puts = Positionvalue + Putvalue
+
+#Calculating what percentage your position has changed
+Hedgeperc = (Position_value_with_puts-P)/P
+
+#Creating a table of the data and plotting SPX % change over your position's % change
+library("pander")
+mydata=cbind(SPXperc,SPXvalue,Putvalue,Positionvalue,Position_value_with_puts,Hedgeperc)
+pandoc.table(mydata)
+plot(Hedgeperc~SPXperc)
+```
+
+Interestingly enough, I find that there is a linear relationship between the change of S&P500 and my final stock, but there is a different linear relationship if the S&P500 does not drop as I suspected. 
+
+
+
+```{r}
+#Setting values for P=money willing to be invested, Perc = percentage willing to be used for buying put options, SPX = S&P500 price, numPuts = number of put options bought
+
+P=1000000   #money invested
+Perc=.01696   #percentage for put options
+SPX = 2111.72   # S&P 500 price
+numPuts=4    #numPuts = number of put options 
+
+#creating a sequence of numbers that represent percentage growth or decrease of SPX
+SPXperc = c(seq(-0.5,0.5,0.05))
+
+#Calculating how much your position is worth given that SPX grows or decreases by SPXperc
+SPXvalue = SPX * (SPXperc+1)
+Putvalue = (pmax(SPX-SPXvalue, 0))*numPuts*100
+Positionvalue = (P*(1-Perc))*(1+SPXperc)
+Position_value_with_puts = Positionvalue + Putvalue
+Hedgeperc = (Position_value_with_puts-P)/P   #Calculating what percentage your position has changed
+
+
+#Creating a table of the data and plotting SPX % change over your position's % change
+library("pander")
+mydata=cbind(SPXperc,SPXvalue,Putvalue,Positionvalue,Position_value_with_puts,Hedgeperc)
+pandoc.table(mydata)
+plot(Hedgeperc~SPXperc)
+```
+
+
+So the line is less curved. Now let's take this line and play wit it. 
+
+
+
+
